@@ -284,13 +284,13 @@
                 <div id="lv2" class="hidden p-4 bg-blue-50/30 border-t border-blue-100">
                     <ul class="space-y-3">
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv2_S01_HTML.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-blue-400 font-bold mr-3 text-sm">1강</span>
                                 <span class="text-gray-700">인터넷 세상의 뼈대 만들기 (HTML)</span>
                             </a>
                         </li>
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv2_S02_CSS.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-blue-400 font-bold mr-3 text-sm">2강</span>
                                 <span class="text-gray-700">예쁘게 화장하기 (CSS 디자인)</span>
                             </a>
@@ -320,13 +320,13 @@
                 <div id="lv3" class="hidden p-4 bg-cyan-50/30 border-t border-cyan-100">
                     <ul class="space-y-3">
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv3_S01_ReactComp.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-cyan-500 font-bold mr-3 text-sm">1강</span>
                                 <span class="text-gray-700">컴포넌트: 화면을 조각내자!</span>
                             </a>
                         </li>
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv3_S02_ReactState.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-cyan-500 font-bold mr-3 text-sm">2강</span>
                                 <span class="text-gray-700">State: 변하는 숫자 마법 (카운터 만들기)</span>
                             </a>
@@ -341,47 +341,57 @@
                 </div>
             </div>
 
-            <!-- Level 4: 프로젝트 실습 -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-purple-200 transform hover:scale-[1.01] transition-transform">
-                <div onclick="toggleSection('lv4')" class="bg-purple-600 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-purple-700 transition-colors">
-                    <h2 class="text-xl font-bold font-jua flex items-center">
-                        <span class="bg-white text-purple-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">4</span>
-                        실전! 나만의 앱 만들기
-                    </h2>
-                    <div class="flex items-center gap-3">
-                        <span class="bg-yellow-400 text-purple-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">현재 진도</span>
-                        <i id="arrow-lv4" class="ph-bold ph-caret-down text-xl transition-transform rotate-180"></i>
-                    </div>
-                </div>
-                <div id="lv4" class="p-4 bg-purple-50 border-t border-purple-100">
-                    <ul class="space-y-3">
-                        <li>
-                            <a href="./Gemini_Coding_Class_Kids.html" class="flex justify-between items-center p-4 bg-white rounded-xl shadow-md border-l-4 border-purple-500 hover:bg-purple-50 transition group">
-                                <div class="flex items-center">
-                                    <span class="bg-purple-100 text-purple-700 font-bold py-1 px-2 rounded text-sm mr-3">실습</span>
-                                    <div>
-                                        <span class="font-bold text-gray-900 group-hover:text-purple-700 block text-lg">모의투자 동아리 앱 📈</span>
-                                        <span class="text-xs text-gray-500">React + AI 코딩 체험하기</span>
-                                    </div>
-                                </div>
-                                <span class="text-2xl animate-bounce">👈</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70 mt-2">
-                                <span class="text-purple-400 font-bold mr-3 text-sm">응용</span>
-                                <span class="text-gray-700">우리 반 급식표 앱 만들기</span>
-                            </a>
-                        </li>
-                        <li class="mt-4 pt-4 border-t border-purple-200">
-                            <button onclick="openQuiz('lv4')" class="w-full flex items-center justify-center p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-lg">
-                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
-                                <span class="font-bold">4단계 개념 확인 퀴즈 도전!</span>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+           <!-- Level 4-2: 실전! 나만의 앱 만들기 -->
+<div class="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-purple-200 transform hover:scale-[1.01] transition-transform">
+  <div onclick="toggleSection('lv4-app')" class="bg-purple-600 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-purple-700 transition-colors">
+    <h2 class="text-xl font-bold font-jua flex items-center">
+      <span class="bg-white text-purple-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">4</span>
+      실전! 우리 반 데이터 앱
+    </h2>
+    <div class="flex items-center gap-3">
+      <span class="bg-yellow-400 text-purple-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">현재 진도</span>
+      <i id="arrow-lv4-app" class="ph-bold ph-caret-down text-xl transition-transform rotate-180"></i>
+    </div>
+  </div>
+
+  <div id="lv4-app" class="p-4 bg-purple-50 border-t border-purple-100">
+    <ul class="space-y-3">
+      <!-- 실습1: 모의투자 -->
+      <li>
+        <a href="./Lv4_S01_Stock.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 mt-2">
+          <span class="text-purple-600 font-bold mr-3 text-sm">실습1</span>
+          <span class="text-gray-700">
+            모의 주식 투자로 수익률 계산해 보기 📈
+          </span>
+        </a>
+        <p class="mt-1 ml-14 text-xs text-gray-500">
+          변하는 숫자와 그래프로 “데이터가 어떻게 움직이는지”를 연습해요.
+        </p>
+      </li>
+
+      <!-- 실습2: 급식표 -->
+      <li>
+        <a href="./Lv4_S02_Lunch.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 mt-2">
+          <span class="text-purple-600 font-bold mr-3 text-sm">실습2</span>
+          <span class="text-gray-700">
+            우리 반 급식·만족도 데이터 앱 만들기 🍽️
+          </span>
+        </a>
+        <p class="mt-1 ml-14 text-xs text-gray-500">
+          모의투자에서 연습한 개념을 점심 메뉴와 만족도 데이터에 적용해 볼 거예요.
+        </p>
+      </li>
+
+      <li class="mt-4 pt-4 border-t border-purple-200">
+        <button onclick="openQuiz('lv4')" class="w-full flex items-center justify-center p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-lg">
+          <i class="ph-fill ph-trophy text-xl mr-2"></i>
+          <span class="font-bold">4단계 개념 확인 퀴즈 도전!</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
 
             <!-- Level 5: 데이터베이스 -->
             <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
@@ -398,13 +408,13 @@
                 <div id="lv5" class="hidden p-4 bg-orange-50/30 border-t border-orange-100">
                     <ul class="space-y-3">
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv5_S01_Guestbook.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-orange-400 font-bold mr-3 text-sm">1강</span>
                                 <span class="text-gray-700">사라지지 않는 기억: 방명록 만들기</span>
                             </a>
                         </li>
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv5_S02_Chat.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-orange-400 font-bold mr-3 text-sm">2강</span>
                                 <span class="text-gray-700">실시간 채팅방 구현하기</span>
                             </a>
@@ -434,13 +444,13 @@
                 <div id="lv6" class="hidden p-4 bg-green-50/30 border-t border-green-100">
                     <ul class="space-y-3">
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv6_S01_Github.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-green-500 font-bold mr-3 text-sm">1강</span>
                                 <span class="text-gray-700">Github로 전 세계에 내 앱 자랑하기</span>
                             </a>
                         </li>
                         <li>
-                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                            <a href="./Lv6_S02_Graduation.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
                                 <span class="text-green-500 font-bold mr-3 text-sm">2강</span>
                                 <span class="text-gray-700">졸업 작품 전시회 & 수료식</span>
                             </a>
