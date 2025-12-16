@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 코딩 스쿨 강의실</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f3f4f6; }
+        .font-jua { font-family: 'Jua', sans-serif; }
+        .rotate-180 { transform: rotate(180deg); }
+        .transition-transform { transition: transform 0.3s ease; }
+        
+        /* Quiz Modal Animation */
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake { animation: shake 0.4s ease-in-out; }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti-piece {
+            position: fixed;
+            width: 10px; height: 10px;
+            background-color: #f00;
+            animation: confetti 2s ease-out forwards;
+            z-index: 60;
+        }
+    </style>
+    <script>
+        // Quiz Data
+        const quizData = {
+            lv1: {
+                question: "AI(제미나이)에게 그림을 그려달라고 할 때 가장 좋은 방법은?",
+                options: [
+                    { text: "그림 그려줘.", correct: false },
+                    { text: "멋진 그림.", correct: false },
+                    { text: "파란 하늘을 배경으로 웃고 있는 고양이 그림 그려줘.", correct: true }
+                ],
+                explanation: "AI는 구체적으로 말해줄수록 더 잘 알아들어요! 상황과 배경을 자세히 설명해주세요.",
+                praise: "우와! 완벽해요! 프롬프트 엔지니어링 소질이 있는데요? 🎉"
+            },
+            lv2: {
+                question: "웹사이트의 '뼈대'를 만드는 언어는 무엇일까요?",
+                options: [
+                    { text: "CSS", correct: false },
+                    { text: "HTML", correct: true },
+                    { text: "Python", correct: false }
+                ],
+                explanation: "HTML은 뼈대(구조), CSS는 화장(디자인), 자바스크립트는 움직임을 담당해요.",
+                praise: "정답입니다! 건축가처럼 멋진 뼈대를 세울 준비가 되셨군요! 🏗️"
+            },
+            lv3: {
+                question: "리액트(React)에서 화면을 구성하는 '레고 블록' 같은 부품의 이름은?",
+                options: [
+                    { text: "컴포넌트 (Component)", correct: true },
+                    { text: "로봇", correct: false },
+                    { text: "스티커", correct: false }
+                ],
+                explanation: "리액트는 '컴포넌트'라는 작은 부품들을 조립해서 큰 화면을 만들어요.",
+                praise: "브라보! 👏 리액트의 핵심을 정확히 꿰뚫고 계시네요!"
+            },
+            lv4: {
+                question: "앱에서 '돈'이나 '점수'처럼 계속 변하는 값을 다룰 때 사용하는 마법 상자는?",
+                options: [
+                    { text: "Style (스타일)", correct: false },
+                    { text: "State (상태)", correct: true },
+                    { text: "Static (고정)", correct: false }
+                ],
+                explanation: "값이 변할 때는 'State'라는 마법 상자를 사용해야 화면이 자동으로 바뀌어요.",
+                praise: "세상에! 천재 아니신가요? State의 개념을 완벽히 이해했어요! 🌟"
+            },
+            lv5: {
+                question: "컴퓨터를 껐다 켜도 데이터가 사라지지 않게 도와주는 보물창고는?",
+                options: [
+                    { text: "내 머릿속", correct: false },
+                    { text: "종이 메모장", correct: false },
+                    { text: "데이터베이스 (DB)", correct: true }
+                ],
+                explanation: "데이터베이스(DB)는 인터넷상의 안전한 금고라서 데이터를 영원히 보관해줘요.",
+                praise: "맞아요! 이제 소중한 데이터를 잃어버릴 걱정이 없겠네요! 🔐"
+            },
+            lv6: {
+                question: "내 컴퓨터에 있는 코드를 전 세계 친구들이 볼 수 있게 올리는 곳은?",
+                options: [
+                    { text: "내 서랍", correct: false },
+                    { text: "깃허브 (GitHub)", correct: true },
+                    { text: "휴지통", correct: false }
+                ],
+                explanation: "깃허브(GitHub)에 배포하면 나만의 인터넷 주소가 생겨서 친구들이 놀러올 수 있어요!",
+                praise: "축하합니다! 이제 전 세계를 무대로 활동하는 글로벌 개발자예요! 🌍✈️"
+            }
+        };
+
+        let currentLevel = '';
+
+        function toggleSection(id) {
+            const content = document.getElementById(id);
+            const arrow = document.getElementById('arrow-' + id);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        function openQuiz(level) {
+            currentLevel = level;
+            const data = quizData[level];
+            document.getElementById('quiz-question').innerText = data.question;
+            
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+            
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 transition mb-3 font-medium text-gray-700";
+                btn.innerText = `${index + 1}. ${opt.text}`;
+                btn.onclick = () => checkAnswer(opt.correct);
+                optionsDiv.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-modal').classList.remove('hidden');
+        }
+
+        function closeQuiz() {
+            document.getElementById('quiz-modal').classList.add('hidden');
+        }
+
+        function checkAnswer(isCorrect) {
+            const feedbackDiv = document.getElementById('quiz-feedback');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            const data = quizData[currentLevel];
+
+            feedbackDiv.classList.remove('hidden');
+            
+            if (isCorrect) {
+                feedbackTitle.innerText = "정답입니다! ⭕";
+                feedbackTitle.className = "text-2xl font-bold text-green-600 font-jua mb-2";
+                feedbackText.innerText = data.praise;
+                feedbackDiv.className = "mt-4 p-4 bg-green-50 rounded-xl border-2 border-green-200 text-center";
+                fireConfetti();
+            } else {
+                feedbackTitle.innerText = "앗, 다시 생각해볼까요? ❌";
+                feedbackTitle.className = "text-2xl font-bold text-red-500 font-jua mb-2";
+                feedbackText.innerText = "힌트: " + data.explanation;
+                feedbackDiv.className = "mt-4 p-4 bg-red-50 rounded-xl border-2 border-red-200 text-center shake";
+            }
+        }
+
+        function fireConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.top = '-10px';
+                piece.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), 3000);
+            }
+        }
+    </script>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- 프로필 헤더 섹션 -->
+        <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10 mb-10 border border-indigo-50 relative overflow-hidden">
+            <!-- 배경 장식 -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -mr-16 -mt-16 opacity-50 z-0"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <!-- 프로필 사진 -->
+                <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-indigo-100 shadow-lg flex-shrink-0 bg-gray-200 relative group">
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Professor&clothing=blazerAndShirt&glasses=round" 
+                         alt="김형태 학과장님" 
+                         class="w-full h-full object-cover"
+                         onerror="this.src='https://via.placeholder.com/150?text=Photo'"
+                    >
+                </div>
+
+                <!-- 프로필 텍스트 -->
+                <div class="text-center md:text-left flex-1">
+                    <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full mb-2">Classroom Host</span>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 font-jua mb-1">AI 코딩 스쿨 라이브러리</h1>
+                    <p class="text-gray-500 mb-6">학과장과 함께하는 6단계 마스터 과정</p>
+                    
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <h2 class="text-xl font-bold text-indigo-900 mb-2 font-jua">김형태 학과장</h2>
+                        <ul class="text-sm text-gray-700 space-y-1.5">
+                            <li class="flex items-center justify-center md:justify-start">
+                                <i class="ph-fill ph-check-circle text-indigo-500 mr-2"></i>
+                                우송대학교 AI경영학과 학과장
+                            </li>
+                            <li class="flex items-center justify-center md:justify-start">
+                                <i class="ph-fill ph-check-circle text-indigo-500 mr-2"></i>
+                                우송대학교 AI교육혁신실장
+                            </li>
+                            <li class="flex items-center justify-center md:justify-start">
+                                <i class="ph-fill ph-check-circle text-indigo-500 mr-2"></i>
+                                한국산업경영시스템학회 상임이사
+                            </li>
+                            <li class="flex items-center justify-center md:justify-start">
+                                <i class="ph-fill ph-check-circle text-indigo-500 mr-2"></i>
+                                한국경영과학회 편집위원
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 커리큘럼 리스트 -->
+        <div class="grid gap-4 md:grid-cols-1">
+
+            <!-- Level 1: 기초 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+                <div onclick="toggleSection('lv1')" class="bg-indigo-500 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-indigo-600 transition-colors">
+                    <h2 class="text-xl font-bold font-jua flex items-center">
+                        <span class="bg-white text-indigo-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">1</span>
+                        AI와 친구되기
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-indigo-400 px-3 py-1 rounded-full text-xs font-bold">준비운동</span>
+                        <i id="arrow-lv1" class="ph-bold ph-caret-down text-xl transition-transform"></i>
+                    </div>
+                </div>
+                <div id="lv1" class="hidden p-4 bg-indigo-50/30 border-t border-indigo-100">
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="./Lv1_S01_Intro.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100">
+                                <span class="text-indigo-400 font-bold mr-3 text-sm">1강</span>
+                                <span class="text-gray-700">제미나이? 그게 누구야? (오리엔테이션)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./Lv1_S02_Prompt.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100">
+                                <span class="text-indigo-400 font-bold mr-3 text-sm">2강</span>
+                                <span class="text-gray-700">AI에게 말 거는 법 (프롬프트 엔지니어링 기초)</span>
+                            </a>
+                        </li>
+                        <li class="mt-4 pt-4 border-t border-indigo-200">
+                            <button onclick="openQuiz('lv1')" class="w-full flex items-center justify-center p-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-lg animate-pulse">
+                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
+                                <span class="font-bold">1단계 개념 확인 퀴즈 도전!</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Level 2: 웹 기초 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+                <div onclick="toggleSection('lv2')" class="bg-blue-500 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-blue-600 transition-colors">
+                    <h2 class="text-xl font-bold font-jua flex items-center">
+                        <span class="bg-white text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">2</span>
+                        웹사이트의 비밀
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-blue-400 px-3 py-1 rounded-full text-xs font-bold">HTML/CSS</span>
+                        <i id="arrow-lv2" class="ph-bold ph-caret-down text-xl transition-transform"></i>
+                    </div>
+                </div>
+                <div id="lv2" class="hidden p-4 bg-blue-50/30 border-t border-blue-100">
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-blue-400 font-bold mr-3 text-sm">1강</span>
+                                <span class="text-gray-700">인터넷 세상의 뼈대 만들기 (HTML)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-blue-400 font-bold mr-3 text-sm">2강</span>
+                                <span class="text-gray-700">예쁘게 화장하기 (CSS 디자인)</span>
+                            </a>
+                        </li>
+                        <li class="mt-4 pt-4 border-t border-blue-200">
+                            <button onclick="openQuiz('lv2')" class="w-full flex items-center justify-center p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg">
+                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
+                                <span class="font-bold">2단계 개념 확인 퀴즈 도전!</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Level 3: 리액트 입문 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+                <div onclick="toggleSection('lv3')" class="bg-cyan-500 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-cyan-600 transition-colors">
+                    <h2 class="text-xl font-bold font-jua flex items-center">
+                        <span class="bg-white text-cyan-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">3</span>
+                        리액트 레고 조립
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-cyan-400 px-3 py-1 rounded-full text-xs font-bold">React 기초</span>
+                        <i id="arrow-lv3" class="ph-bold ph-caret-down text-xl transition-transform"></i>
+                    </div>
+                </div>
+                <div id="lv3" class="hidden p-4 bg-cyan-50/30 border-t border-cyan-100">
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-cyan-500 font-bold mr-3 text-sm">1강</span>
+                                <span class="text-gray-700">컴포넌트: 화면을 조각내자!</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-cyan-500 font-bold mr-3 text-sm">2강</span>
+                                <span class="text-gray-700">State: 변하는 숫자 마법 (카운터 만들기)</span>
+                            </a>
+                        </li>
+                        <li class="mt-4 pt-4 border-t border-cyan-200">
+                            <button onclick="openQuiz('lv3')" class="w-full flex items-center justify-center p-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition shadow-lg">
+                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
+                                <span class="font-bold">3단계 개념 확인 퀴즈 도전!</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Level 4: 프로젝트 실습 -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-purple-200 transform hover:scale-[1.01] transition-transform">
+                <div onclick="toggleSection('lv4')" class="bg-purple-600 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-purple-700 transition-colors">
+                    <h2 class="text-xl font-bold font-jua flex items-center">
+                        <span class="bg-white text-purple-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">4</span>
+                        실전! 나만의 앱 만들기
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-yellow-400 text-purple-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">현재 진도</span>
+                        <i id="arrow-lv4" class="ph-bold ph-caret-down text-xl transition-transform rotate-180"></i>
+                    </div>
+                </div>
+                <div id="lv4" class="p-4 bg-purple-50 border-t border-purple-100">
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="./Gemini_Coding_Class_Kids.html" class="flex justify-between items-center p-4 bg-white rounded-xl shadow-md border-l-4 border-purple-500 hover:bg-purple-50 transition group">
+                                <div class="flex items-center">
+                                    <span class="bg-purple-100 text-purple-700 font-bold py-1 px-2 rounded text-sm mr-3">실습</span>
+                                    <div>
+                                        <span class="font-bold text-gray-900 group-hover:text-purple-700 block text-lg">모의투자 동아리 앱 📈</span>
+                                        <span class="text-xs text-gray-500">React + AI 코딩 체험하기</span>
+                                    </div>
+                                </div>
+                                <span class="text-2xl animate-bounce">👈</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70 mt-2">
+                                <span class="text-purple-400 font-bold mr-3 text-sm">응용</span>
+                                <span class="text-gray-700">우리 반 급식표 앱 만들기</span>
+                            </a>
+                        </li>
+                        <li class="mt-4 pt-4 border-t border-purple-200">
+                            <button onclick="openQuiz('lv4')" class="w-full flex items-center justify-center p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-lg">
+                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
+                                <span class="font-bold">4단계 개념 확인 퀴즈 도전!</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Level 5: 데이터베이스 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+                <div onclick="toggleSection('lv5')" class="bg-orange-500 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-orange-600 transition-colors">
+                    <h2 class="text-xl font-bold font-jua flex items-center">
+                        <span class="bg-white text-orange-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">5</span>
+                        데이터 보물창고
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-orange-400 px-3 py-1 rounded-full text-xs font-bold">Firebase DB</span>
+                        <i id="arrow-lv5" class="ph-bold ph-caret-down text-xl transition-transform"></i>
+                    </div>
+                </div>
+                <div id="lv5" class="hidden p-4 bg-orange-50/30 border-t border-orange-100">
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-orange-400 font-bold mr-3 text-sm">1강</span>
+                                <span class="text-gray-700">사라지지 않는 기억: 방명록 만들기</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-orange-400 font-bold mr-3 text-sm">2강</span>
+                                <span class="text-gray-700">실시간 채팅방 구현하기</span>
+                            </a>
+                        </li>
+                        <li class="mt-4 pt-4 border-t border-orange-200">
+                            <button onclick="openQuiz('lv5')" class="w-full flex items-center justify-center p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition shadow-lg">
+                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
+                                <span class="font-bold">5단계 개념 확인 퀴즈 도전!</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Level 6: 배포 및 완성 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+                <div onclick="toggleSection('lv6')" class="bg-green-600 text-white p-5 flex justify-between items-center cursor-pointer hover:bg-green-700 transition-colors">
+                    <h2 class="text-xl font-bold font-jua flex items-center">
+                        <span class="bg-white text-green-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">6</span>
+                        나도 이제 개발자
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-green-500 px-3 py-1 rounded-full text-xs font-bold">배포 & 졸업</span>
+                        <i id="arrow-lv6" class="ph-bold ph-caret-down text-xl transition-transform"></i>
+                    </div>
+                </div>
+                <div id="lv6" class="hidden p-4 bg-green-50/30 border-t border-green-100">
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-green-500 font-bold mr-3 text-sm">1강</span>
+                                <span class="text-gray-700">Github로 전 세계에 내 앱 자랑하기</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./Lecture_Template.html" class="flex items-center p-3 bg-white rounded-lg hover:shadow-md transition border border-gray-100 opacity-70">
+                                <span class="text-green-500 font-bold mr-3 text-sm">2강</span>
+                                <span class="text-gray-700">졸업 작품 전시회 & 수료식</span>
+                            </a>
+                        </li>
+                        <li class="mt-4 pt-4 border-t border-green-200">
+                            <button onclick="openQuiz('lv6')" class="w-full flex items-center justify-center p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-lg">
+                                <i class="ph-fill ph-trophy text-xl mr-2"></i>
+                                <span class="font-bold">6단계 개념 확인 퀴즈 도전!</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-12 mb-8">
+            <p class="text-gray-400 text-sm">&copy; 2024 AI Coding School. Powered by Gemini.</p>
+            <p class="text-xs text-gray-300 mt-1">이 페이지는 커리큘럼 안내용 허브 페이지입니다.</p>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl modal-content relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-indigo-500"></div>
+            
+            <div class="text-center mb-6">
+                <span class="inline-block bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold mb-3">QUIZ TIME</span>
+                <h3 id="quiz-question" class="text-2xl font-bold text-gray-800 font-jua">
+                    질문 내용이 여기에 나옵니다.
+                </h3>
+            </div>
+
+            <div id="quiz-options" class="space-y-3">
+                <!-- Options injected by JS -->
+            </div>
+
+            <!-- Feedback Area -->
+            <div id="quiz-feedback" class="hidden mt-4">
+                <h4 id="feedback-title" class="text-xl font-bold"></h4>
+                <p id="feedback-text" class="text-gray-600"></p>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="closeQuiz()" class="text-gray-400 hover:text-gray-600 font-bold underline text-sm">
+                    닫기 (나중에 풀기)
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
