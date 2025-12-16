@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5단계 2강: 실시간 채팅방</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #fff7ed; }
+        .kids-font { font-family: 'Jua', sans-serif; }
+        .chat-bubble { max-width: 75%; position: relative; }
+        /* 말풍선 꼬리 */
+        .bubble-right::after {
+            content: ''; position: absolute; right: -6px; top: 10px;
+            border-left: 8px solid #f97316; border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+        }
+        .bubble-left::after {
+            content: ''; position: absolute; left: -6px; top: 10px;
+            border-right: 8px solid #e5e7eb; border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const App = () => {
+            const [chats, setChats] = useState([
+                { id: 1, text: "안녕? 나는 제미나이 봇이야! 👋", isMe: false },
+                { id: 2, text: "나랑 실시간으로 대화해보자.", isMe: false }
+            ]);
+            const [input, setInput] = useState("");
+            const chatEndRef = useRef(null);
+
+            // 자동 스크롤
+            useEffect(() => {
+                chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, [chats]);
+
+            const sendMessage = () => {
+                if (!input.trim()) return;
+
+                // 1. 내 메시지 보내기
+                const myMsg = { id: Date.now(), text: input, isMe: true };
+                setChats(prev => [...prev, myMsg]);
+                setInput("");
+
+                // 2. 제미나이 봇의 실시간 답장 시뮬레이션
+                setTimeout(() => {
+                    const botReplies = [
+                        "우와, 정말 멋진 말이야! 😮",
+                        "실시간으로 대화하니까 재밌지? ⚡",
+                        "Firebase DB를 쓰면 친구랑도 이렇게 할 수 있어!",
+                        "내가 도와줄 다른 건 없어? 🤖",
+                        "코딩 실력이 점점 늘고 있네! 👍"
+                    ];
+                    const randomReply = botReplies[Math.floor(Math.random() * botReplies.length)];
+                    const botMsg = { id: Date.now() + 1, text: randomReply, isMe: false };
+                    setChats(prev => [...prev, botMsg]);
+                }, 1000); // 1초 뒤에 답장
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-8 px-4">
+                    {/* 헤더 */}
+                    <div className="w-full max-w-md flex justify-between items-center mb-6">
+                        <button onClick={() => window.location.href='index.html'} className="bg-white p-2 rounded-lg shadow text-orange-500 hover:bg-orange-50">
+                            <i className="ph-bold ph-house text-xl"></i>
+                        </button>
+                        <div className="text-center">
+                            <span className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-bold">5단계 2강</span>
+                            <h1 className="text-2xl font-bold text-gray-800 kids-font">💬 실시간 채팅방</h1>
+                        </div>
+                        <button onClick={() => window.location.href='Lv6_S01_Github.html'} className="bg-green-500 text-white p-2 rounded-lg shadow hover:bg-green-600 font-bold text-sm">
+                            6단계로 <i className="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    {/* 채팅앱 컨테이너 */}
+                    <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-orange-300 flex flex-col h-[600px]">
+                        
+                        {/* 채팅방 상단바 */}
+                        <div className="bg-orange-500 p-4 flex items-center text-white shadow-md z-10">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-2xl mr-3 border-2 border-yellow-300">
+                                🤖
+                            </div>
+                            <div>
+                                <h2 className="font-bold kids-font text-lg">제미나이 봇</h2>
+                                <div className="flex items-center text-xs text-orange-100">
+                                    <span className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></span>
+                                    현재 활동 중
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 채팅 내용 영역 */}
+                        <div className="flex-1 overflow-y-auto p-4 bg-orange-50">
+                            {chats.map((chat) => (
+                                <div key={chat.id} className={`flex mb-4 ${chat.isMe ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`
+                                        p-3 rounded-2xl shadow-sm text-sm font-medium chat-bubble
+                                        ${chat.isMe 
+                                            ? 'bg-orange-500 text-white rounded-tr-none bubble-right' 
+                                            : 'bg-gray-200 text-gray-800 rounded-tl-none bubble-left'}
+                                    `}>
+                                        {chat.text}
+                                    </div>
+                                </div>
+                            ))}
+                            <div ref={chatEndRef} />
+                        </div>
+
+                        {/* 입력창 영역 */}
+                        <div className="p-3 bg-white border-t border-gray-200 flex items-center gap-2">
+                            <input 
+                                type="text" 
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                placeholder="메시지를 입력하세요..."
+                                className="flex-1 bg-gray-100 p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                            />
+                            <button 
+                                onClick={sendMessage}
+                                className="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow hover:bg-orange-600 transition transform active:scale-95"
+                            >
+                                <i className="ph-bold ph-paper-plane-right text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 학습 팁 */}
+                    <div className="mt-6 max-w-md text-center text-gray-500 text-sm">
+                        <p>
+                            <i className="ph-fill ph-lightning text-yellow-500"></i>
+                            <strong>실시간 동기화:</strong><br/>
+                            Firebase는 친구가 보낸 메시지를<br/>
+                            새로고침 없이 바로(Real-time) 보여주는 마법을 부려요!
+                        </p>
+                    </div>
+
+                </div>
+            );
+        };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

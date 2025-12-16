@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6단계 1강: 깃허브 배포</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f0fdf4; }
+        .kids-font { font-family: 'Jua', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const LECTURE_INFO = {
+            level: "6단계",
+            title: "전 세계에 내 앱 자랑하기 (Github)", 
+            themeColor: "green"
+        };
+
+        const SLIDES = [
+            {
+                title: "내 컴퓨터 vs 인터넷",
+                text: "지금 만든 파일은 내 컴퓨터에만 있어요.\n친구들이 보게 하려면 '인터넷 세상'에 올려야 해요.\n그곳이 바로 '깃허브(Github)'랍니다!",
+                icon: "🌍"
+            },
+            {
+                title: "1단계: 저장소 만들기",
+                text: "깃허브에 가입하고 'New Repository'를 눌러요.\n이건 우리 파일들이 살게 될\n새로운 '인터넷 집'을 짓는 거예요.",
+                icon: "🏠"
+            },
+            {
+                title: "2단계: 파일 올리기",
+                text: "우리가 만든 .html 파일들을 드래그해서 올려요.\n특히 대문 파일 이름은 꼭\n'index.html'이어야 문이 잘 열려요!",
+                icon: "📤"
+            },
+            {
+                title: "3단계: 배포 버튼 꾹!",
+                text: "Settings(설정) > Pages 메뉴에서\nBranch를 'main'으로 바꾸고 저장하면 끝!\n이제 나만의 인터넷 주소가 생겨요.",
+                icon: "🔗"
+            }
+        ];
+
+        const App = () => {
+            const [step, setStep] = React.useState(0);
+            
+            // 색상 설정
+            const colors = {
+                bg: `bg-${LECTURE_INFO.themeColor}-600`,
+                text: `text-${LECTURE_INFO.themeColor}-600`,
+                border: `border-${LECTURE_INFO.themeColor}-200`,
+                btn: `bg-${LECTURE_INFO.themeColor}-500 hover:bg-${LECTURE_INFO.themeColor}-600`
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                    <div className={`max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border-4 ${colors.border}`}>
+                        {/* 헤더 */}
+                        <div className={`${colors.bg} p-4 flex items-center justify-between text-white`}>
+                            <button onClick={() => window.location.href='index.html'} className="hover:bg-white/20 px-3 py-1 rounded-lg transition">
+                                <i className="ph-bold ph-house text-2xl"></i>
+                            </button>
+                            <div className="text-center">
+                                <span className="text-xs bg-black/20 px-2 py-0.5 rounded-full">{LECTURE_INFO.level}</span>
+                                <h1 className="text-xl md:text-2xl font-bold kids-font mt-1">{LECTURE_INFO.title}</h1>
+                            </div>
+                            <div className="w-8"></div>
+                        </div>
+
+                        {/* 내용 화면 */}
+                        <div className="p-8 text-center min-h-[400px] flex flex-col justify-center items-center">
+                            <div className="text-8xl mb-6 animate-bounce">{SLIDES[step].icon}</div>
+                            <h2 className="text-3xl font-bold mb-4 text-gray-800 kids-font">{SLIDES[step].title}</h2>
+                            <p className="text-xl text-gray-600 whitespace-pre-line leading-relaxed">{SLIDES[step].text}</p>
+                            
+                            {/* 3단계일 때 꿀팁 표시 */}
+                            {step === 3 && (
+                                <div className="mt-6 bg-yellow-50 p-3 rounded-lg border border-yellow-200 text-sm text-yellow-700 animate-pulse">
+                                    💡 Tip: 주소가 만들어지기까지 1~2분 정도 걸려요!
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 하단 버튼 */}
+                        <div className="bg-gray-50 p-6 flex justify-between items-center border-t">
+                            <button 
+                                onClick={() => setStep(Math.max(0, step - 1))}
+                                disabled={step === 0}
+                                className={`px-6 py-2 rounded-xl font-bold transition ${step === 0 ? 'bg-gray-200 text-gray-400' : 'bg-white border-2 border-gray-300 text-gray-600 hover:bg-gray-100'}`}
+                            >
+                                이전
+                            </button>
+                            
+                            <div className="flex gap-2">
+                                {SLIDES.map((_, i) => (
+                                    <div key={i} className={`w-3 h-3 rounded-full ${i === step ? colors.bg : 'bg-gray-300'}`}></div>
+                                ))}
+                            </div>
+
+                            {step < SLIDES.length - 1 ? (
+                                <button 
+                                    onClick={() => setStep(step + 1)}
+                                    className={`px-6 py-2 text-white rounded-xl font-bold shadow-lg transition ${colors.btn}`}
+                                >
+                                    다음
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={() => window.location.href='Lv6_S02_Graduation.html'}
+                                    className="px-6 py-2 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 shadow-lg animate-pulse"
+                                >
+                                    졸업식장으로 이동! 🎓
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

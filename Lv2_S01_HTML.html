@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2단계 1강: HTML 기초</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #eff6ff; }
+        .kids-font { font-family: 'Jua', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // ==========================================
+        // [강의 내용 설정] 2단계 1강: HTML
+        // ==========================================
+        const LECTURE_INFO = {
+            level: "2단계",
+            title: "인터넷 세상의 뼈대 만들기 (HTML)", 
+            themeColor: "blue"
+        };
+
+        const SLIDES = [
+            {
+                title: "HTML이 뭘까요?",
+                text: "사람에게 뼈가 있듯이, 웹사이트에도 뼈대가 필요해요.\n글자, 그림, 버튼의 위치를 잡아주는 언어랍니다.",
+                icon: "💀"
+            },
+            {
+                title: "태그(Tag)란?",
+                text: "명령어를 꺽쇠 괄호 < > 로 감싼 것을 말해요.\n시작 태그와 끝 태그가 짝을 이뤄요.\n예: <button>버튼</button>",
+                icon: "🏷️"
+            },
+            {
+                title: "자주 쓰는 태그들",
+                text: "<h1> : 큰 제목 (Head)\n<p> : 문단 (Paragraph)\n<img> : 이미지 (Image)\n<button> : 클릭 버튼",
+                icon: "abc"
+            },
+            {
+                title: "직접 해보기",
+                text: "메모장을 열고 <h1>안녕</h1> 이라고 적은 뒤\n파일 이름을 'test.html'로 저장해보세요.\n멋진 웹사이트가 탄생할 거예요!",
+                icon: "⌨️"
+            }
+        ];
+        // ==========================================
+
+        const App = () => {
+            const [step, setStep] = React.useState(0);
+            
+            // 색상 설정 (themeColor에 따라 자동 변경)
+            const colors = {
+                bg: `bg-${LECTURE_INFO.themeColor}-500`,
+                text: `text-${LECTURE_INFO.themeColor}-600`,
+                border: `border-${LECTURE_INFO.themeColor}-200`,
+                btn: `bg-${LECTURE_INFO.themeColor}-500 hover:bg-${LECTURE_INFO.themeColor}-600`
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                    <div className={`max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border-4 ${colors.border}`}>
+                        {/* 헤더 */}
+                        <div className={`${colors.bg} p-4 flex items-center justify-between text-white`}>
+                            <button onClick={() => window.location.href='index.html'} className="hover:bg-white/20 px-3 py-1 rounded-lg transition">
+                                <i className="ph-bold ph-house text-2xl"></i>
+                            </button>
+                            <div className="text-center">
+                                <span className="text-xs bg-black/20 px-2 py-0.5 rounded-full">{LECTURE_INFO.level}</span>
+                                <h1 className="text-xl md:text-2xl font-bold kids-font mt-1">{LECTURE_INFO.title}</h1>
+                            </div>
+                            <div className="w-8"></div>
+                        </div>
+
+                        {/* 내용 화면 */}
+                        <div className="p-8 text-center min-h-[400px] flex flex-col justify-center items-center">
+                            <div className="text-8xl mb-6 animate-bounce">{SLIDES[step].icon}</div>
+                            <h2 className="text-3xl font-bold mb-4 text-gray-800 kids-font">{SLIDES[step].title}</h2>
+                            <p className="text-xl text-gray-600 whitespace-pre-line leading-relaxed">{SLIDES[step].text}</p>
+                        </div>
+
+                        {/* 하단 버튼 */}
+                        <div className="bg-gray-50 p-6 flex justify-between items-center border-t">
+                            <button 
+                                onClick={() => setStep(Math.max(0, step - 1))}
+                                disabled={step === 0}
+                                className={`px-6 py-2 rounded-xl font-bold transition ${step === 0 ? 'bg-gray-200 text-gray-400' : 'bg-white border-2 border-gray-300 text-gray-600 hover:bg-gray-100'}`}
+                            >
+                                이전
+                            </button>
+                            
+                            <div className="flex gap-2">
+                                {SLIDES.map((_, i) => (
+                                    <div key={i} className={`w-3 h-3 rounded-full ${i === step ? colors.bg : 'bg-gray-300'}`}></div>
+                                ))}
+                            </div>
+
+                            {step < SLIDES.length - 1 ? (
+                                <button 
+                                    onClick={() => setStep(step + 1)}
+                                    className={`px-6 py-2 text-white rounded-xl font-bold shadow-lg transition ${colors.btn}`}
+                                >
+                                    다음
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={() => window.location.href='Lv2_S02_CSS.html'}
+                                    className="px-6 py-2 bg-indigo-500 text-white rounded-xl font-bold hover:bg-indigo-600 shadow-lg animate-pulse"
+                                >
+                                    2강으로 가기! 🎨
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

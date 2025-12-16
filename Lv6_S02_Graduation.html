@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6단계 2강: 수료식</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f0fdf4; overflow-x: hidden; }
+        .kids-font { font-family: 'Jua', sans-serif; }
+        .serif-font { font-family: 'Gowun Batang', serif; }
+        
+        /* 금박 테두리 효과 */
+        .certificate-border {
+            background: 
+                linear-gradient(to right, #c0a062 4px, transparent 4px) 0 0,
+                linear-gradient(to right, #c0a062 4px, transparent 4px) 0 100%,
+                linear-gradient(to left, #c0a062 4px, transparent 4px) 100% 0,
+                linear-gradient(to left, #c0a062 4px, transparent 4px) 100% 100%,
+                linear-gradient(to bottom, #c0a062 4px, transparent 4px) 0 0,
+                linear-gradient(to bottom, #c0a062 4px, transparent 4px) 100% 0,
+                linear-gradient(to top, #c0a062 4px, transparent 4px) 0 100%,
+                linear-gradient(to top, #c0a062 4px, transparent 4px) 100% 100%;
+            background-repeat: no-repeat;
+            background-size: 20px 20px;
+        }
+
+        /* 폭죽 애니메이션 */
+        @keyframes firework {
+            0% { transform: translate(var(--x), var(--initialY)); width: var(--initialSize); opacity: 1; }
+            50% { width: 0.5rem; opacity: 1; }
+            100% { width: var(--finalSize); opacity: 0; }
+        }
+        .firework,
+        .firework::before,
+        .firework::after {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0.5rem; height: 0.5rem;
+            border-radius: 50%;
+            content: '';
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [name, setName] = useState("");
+            const [showCertificate, setShowCertificate] = useState(false);
+            const [date, setDate] = useState("");
+
+            useEffect(() => {
+                const today = new Date();
+                setDate(`${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`);
+            }, []);
+
+            const generateCertificate = () => {
+                if (!name) return alert("이름을 입력해주세요!");
+                setShowCertificate(true);
+                fireConfetti();
+            };
+
+            const fireConfetti = () => {
+                // 간단한 폭죽 효과 (DOM 조작)
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+                for(let i=0; i<100; i++) {
+                    const el = document.createElement('div');
+                    el.style.position = 'fixed';
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.top = '-10px';
+                    el.style.width = '10px';
+                    el.style.height = '10px';
+                    el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.transition = 'all 3s ease-out';
+                    el.style.zIndex = '9999';
+                    document.body.appendChild(el);
+                    
+                    setTimeout(() => {
+                        el.style.top = '110vh';
+                        el.style.transform = `rotate(${Math.random() * 720}deg)`;
+                    }, 100);
+
+                    setTimeout(() => el.remove(), 3000);
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-green-50">
+                    
+                    {!showCertificate ? (
+                        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full text-center border-4 border-green-200">
+                            <i className="ph-fill ph-student text-6xl text-green-500 mb-4"></i>
+                            <h1 className="text-3xl font-bold text-gray-800 kids-font mb-2">과정 수료를 축하해요!</h1>
+                            <p className="text-gray-600 mb-6">수료증에 넣을 멋진 이름을 알려주세요.</p>
+                            
+                            <input 
+                                type="text" 
+                                placeholder="이름을 입력하세요 (예: 김코딩)" 
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && generateCertificate()}
+                                className="w-full p-4 bg-gray-50 border-2 border-green-200 rounded-xl mb-4 focus:outline-none focus:border-green-500 text-center text-xl font-bold"
+                            />
+                            
+                            <button 
+                                onClick={generateCertificate}
+                                className="w-full bg-green-500 text-white py-4 rounded-xl font-bold text-xl shadow-lg hover:bg-green-600 transition animate-bounce"
+                            >
+                                수료증 받기 🎓
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="animate-[popIn_0.5s_ease-out]">
+                            {/* 상장 영역 */}
+                            <div className="bg-white p-8 md:p-12 rounded shadow-2xl max-w-2xl w-full border-[20px] border-double border-yellow-600 relative mx-auto text-center bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+                                
+                                {/* 장식 */}
+                                <div className="absolute top-4 left-4 w-16 h-16 border-t-4 border-l-4 border-yellow-600 opacity-50"></div>
+                                <div className="absolute top-4 right-4 w-16 h-16 border-t-4 border-r-4 border-yellow-600 opacity-50"></div>
+                                <div className="absolute bottom-4 left-4 w-16 h-16 border-b-4 border-l-4 border-yellow-600 opacity-50"></div>
+                                <div className="absolute bottom-4 right-4 w-16 h-16 border-b-4 border-r-4 border-yellow-600 opacity-50"></div>
+
+                                <div className="mb-8">
+                                    <i className="ph-fill ph-medal text-6xl text-yellow-500 drop-shadow-md"></i>
+                                </div>
+
+                                <h1 className="text-4xl md:text-5xl font-bold text-black serif-font mb-10 tracking-widest">수 료 증</h1>
+                                
+                                <div className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 serif-font border-b-2 border-gray-300 inline-block px-8 pb-2">
+                                    성 명 : {name}
+                                </div>
+
+                                <p className="text-lg md:text-xl text-gray-700 leading-loose serif-font my-10">
+                                    위 학생은 <strong>AI 코딩 스쿨</strong>의 <br/>
+                                    6단계 마스터 과정을 훌륭한 성적으로 수료하였으며,<br/>
+                                    제미나이와 함께 멋진 앱을 만들었기에<br/>
+                                    이 상장을 수여합니다.
+                                </p>
+
+                                <div className="text-lg text-gray-600 serif-font mb-12">
+                                    {date}
+                                </div>
+
+                                <div className="flex justify-around items-end">
+                                    <div className="text-center">
+                                        <div className="w-20 h-20 bg-red-600 rounded-full text-white flex items-center justify-center font-bold text-xs shadow-inner opacity-80 rotate-12 mx-auto mb-2 border-4 border-red-700">
+                                            우송대<br/>AI경영
+                                        </div>
+                                    </div>
+                                    <div className="text-xl md:text-2xl font-bold serif-font text-right">
+                                        우송대학교 AI경영학과<br/>
+                                        학과장 김 형 태
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 하단 버튼 */}
+                            <div className="flex justify-center gap-4 mt-8 no-print">
+                                <button onClick={() => window.print()} className="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-700 shadow flex items-center gap-2">
+                                    <i className="ph-bold ph-printer"></i> 인쇄하기
+                                </button>
+                                <button onClick={() => window.location.href='index.html'} className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 shadow flex items-center gap-2">
+                                    <i className="ph-bold ph-house"></i> 강의실로
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

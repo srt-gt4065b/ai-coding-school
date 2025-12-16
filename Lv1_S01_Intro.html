@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1강: 제미나이 오리엔테이션</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f0fdf4; } /* 1강은 초록 테마 */
+        .kids-font { font-family: 'Jua', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const App = () => {
+            const [step, setStep] = React.useState(0);
+            
+            const content = [
+                {
+                    title: "안녕? 난 제미나이야!",
+                    text: "나는 구글에서 만든 인공지능(AI) 친구란다. 너희들의 코딩 숙제를 도와줄 똑똑한 조수지!",
+                    icon: "🤖",
+                    bgColor: "bg-green-100"
+                },
+                {
+                    title: "우리가 할 일은?",
+                    text: "1. 나(AI)에게 명령 내리는 법 배우기\n2. 레고처럼 화면 조립하기(React)\n3. 나만의 앱 만들어서 자랑하기",
+                    icon: "📝",
+                    bgColor: "bg-blue-100"
+                },
+                {
+                    title: "준비물은?",
+                    text: "컴퓨터와 '할 수 있다'는 마음가짐만 있으면 돼! \n자, 이제 시작해볼까?",
+                    icon: "🎒",
+                    bgColor: "bg-yellow-100"
+                }
+            ];
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                    <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-green-200">
+                        {/* Header */}
+                        <div className="bg-green-500 p-4 flex items-center justify-between text-white">
+                            <button onClick={() => window.location.href='index.html'} className="hover:bg-green-600 px-3 py-1 rounded-lg transition">
+                                <i className="ph-bold ph-house text-2xl"></i>
+                            </button>
+                            <h1 className="text-2xl font-bold kids-font">1강. 제미나이? 그게 누구야?</h1>
+                            <div className="w-8"></div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 text-center min-h-[400px] flex flex-col justify-center items-center">
+                            <div className="text-8xl mb-6 animate-bounce">{content[step].icon}</div>
+                            <h2 className="text-3xl font-bold mb-4 text-gray-800 kids-font">{content[step].title}</h2>
+                            <p className="text-xl text-gray-600 whitespace-pre-line leading-relaxed">{content[step].text}</p>
+                        </div>
+
+                        {/* Footer / Navigation */}
+                        <div className="bg-gray-50 p-6 flex justify-between items-center border-t">
+                            <button 
+                                onClick={() => setStep(Math.max(0, step - 1))}
+                                disabled={step === 0}
+                                className={`px-6 py-2 rounded-xl font-bold ${step === 0 ? 'bg-gray-200 text-gray-400' : 'bg-white border-2 border-green-500 text-green-600 hover:bg-green-50'}`}
+                            >
+                                이전
+                            </button>
+                            
+                            <div className="flex gap-2">
+                                {content.map((_, i) => (
+                                    <div key={i} className={`w-3 h-3 rounded-full ${i === step ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                                ))}
+                            </div>
+
+                            {step < content.length - 1 ? (
+                                <button 
+                                    onClick={() => setStep(step + 1)}
+                                    className="px-6 py-2 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 shadow-lg"
+                                >
+                                    다음
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={() => window.location.href='Lv1_S02_Prompt.html'}
+                                    className="px-6 py-2 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 shadow-lg animate-pulse"
+                                >
+                                    2강으로 가기! 🚀
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
